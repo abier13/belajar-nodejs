@@ -1,7 +1,7 @@
-'use strict';
 const {
-  Model, Sequelize
+  Model, Sequelize,
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      User.belongsTo(models.Nation);
     }
   }
   User.init({
@@ -46,18 +46,22 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: Sequelize.UUIDV4,
       allowNull: true,
     },
+    NationId: {
+      type: Sequelize.UUID,
+      allowNull: true,
+    },
     createdAt: {
       type: Sequelize.DATE,
       allowNull: false,
     },
     updatedAt: {
       type: Sequelize.DATE,
-      allowNull: false
+      allowNull: false,
     },
     deletedAt: {
       type: Sequelize.DATE,
-      allowNull: true
-    }
+      allowNull: true,
+    },
   }, {
     sequelize,
     paranoid: true, // Fungsi nya untuk soft delete

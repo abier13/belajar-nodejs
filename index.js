@@ -26,12 +26,14 @@ const swaggerSpec = swaggerJSDoc(options);
 
 // import router
 const userRouter = require('./src/routes/user.routes');
+const nationRouter = require('./src/routes/nation.routes');
 const authRouter = require('./src/routes/auth.routes');
 const uploadRouter = require('./src/routes/upload.routes');
 
 app.use(express.static(path.join(__dirname, 'public/')));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api', userRouter);
+app.use('/api', nationRouter);
 app.use('/api', authRouter);
 app.use('/api', uploadRouter);
 

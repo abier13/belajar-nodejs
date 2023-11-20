@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const yup = require('yup');
-const { User } = require('../../models');
+const { User, Nation } = require('../../models');
 const { set, get, del } = require('../modules/redis');
 const { sendEmail } = require('../middlewares/sendEmail');
 
@@ -29,6 +29,11 @@ const getAllUser = async (req, res) => {
         limit: pageSize,
         offset: (page - 1) * pageSize,
         where,
+        include: [
+          {
+            model: Nation,
+          },
+        ],
       });
 
       const total = await User.count();
@@ -39,7 +44,8 @@ const getAllUser = async (req, res) => {
 
       res.status(200).json(resp);
     }
-  } catch {
+  } catch (error) {
+    console.log(error.message);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -77,27 +83,30 @@ const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { body } = req;
-    const { fullName, email, status } = body;
+    const {
+      fullName, email, status, NationId,
+    } = body;
     const user = await User.findByPk(id);
 
     if (!user) {
       throw new Error('User not found');
     }
 
-    await del(`user/${id}`);
+    // await del(`user/${id}`);
 
     await User.update({
-      fullName, email, status,
+      fullName, email, status, NationId,
     }, { where: { id } });
 
-    const resp = await User.findByPk(id);
-    console.log('update', resp);
-    await set(`user/${resp.id}`, resp);
+    // const resp = await User.findByPk(id);
+
+    // await set(`user/${resp.id}`, resp);
 
     // const buildResponse = BuildResponse.updated({});
 
     res.status(200).json({});
-  } catch {
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
