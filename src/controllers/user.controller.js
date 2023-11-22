@@ -6,9 +6,19 @@ const { sendEmail } = require('../middlewares/sendEmail');
 
 const createUserSchema = yup.object().shape({
   fullName: yup.string().required('Nama lengkap harus diisi'),
-  email: yup.string().email().required('Email harus diisi'),
+  email: yup.array().of(
+    yup.string().email().required('Email harus diisi'),
+  ).unique('Email sudah ada'),
   password: yup.string().required('Password harus diisi').min(8, 'Password minimal 8 karakter'),
+  passwordConfirm: yup.string()
+    .oneOf([yup.ref('password'), null], 'Password harus sama'),
 });
+
+// const createUserSchema = yup.object().shape({
+//   fullName: yup.string().required('Nama lengkap harus diisi'),
+//   email: yup.string().email().required('Email harus diisi'),
+//   password: yup.string().required('Password harus diisi').min(8, 'Password minimal 8 karakter'),
+// });
 
 const getAllUser = async (req, res) => {
   try {
